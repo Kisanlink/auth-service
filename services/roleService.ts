@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface RoleListParams {
   limit?: number;
@@ -19,72 +18,41 @@ export interface UpdateRoleRequest {
   is_active?: boolean;
 }
 
-export class RoleServiceClient {
-  private readonly api: ApiClient;
+const createRoleService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: RoleListParams) =>
+      apiClient.get('/api/v1/roles', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreateRoleRequest) =>
+      apiClient.post('/api/v1/roles', payload),
 
-  // List roles
-  list(params?: RoleListParams) {
-    return this.api.get('/api/v1/roles', { params });
-  }
+    getById: (roleId: string) =>
+      apiClient.get(`/api/v1/roles/${roleId}`),
 
-  // Create role
-  create(payload: CreateRoleRequest) {
-    return this.api.post('/api/v1/roles', payload);
-  }
+    update: (roleId: string, payload: UpdateRoleRequest) =>
+      apiClient.put(`/api/v1/roles/${roleId}`, payload),
 
-  // Get role by ID
-  getById(roleId: string) {
-    return this.api.get(`/api/v1/roles/${roleId}`);
-  }
+    delete: (roleId: string) =>
+      apiClient.delete(`/api/v1/roles/${roleId}`),
 
-  // Update role
-  update(roleId: string, payload: UpdateRoleRequest) {
-    return this.api.put(`/api/v1/roles/${roleId}`, payload);
-  }
+    getPermissions: (roleId: string) =>
+      apiClient.get(`/api/v1/roles/${roleId}/permissions`),
 
-  // Delete role
-  delete(roleId: string) {
-    return this.api.delete(`/api/v1/roles/${roleId}`);
-  }
+    assignPermissions: (roleId: string, permissionIds: string[]) =>
+      apiClient.post(`/api/v1/roles/${roleId}/permissions`, { permission_ids: permissionIds }),
 
-  // Get role permissions
-  getPermissions(roleId: string) {
-    return this.api.get(`/api/v1/roles/${roleId}/permissions`);
-  }
+    removePermission: (roleId: string, permissionId: string) =>
+      apiClient.delete(`/api/v1/roles/${roleId}/permissions/${permissionId}`),
 
-  // Assign permissions to role
-  assignPermissions(roleId: string, permissionIds: string[]) {
-    return this.api.post(`/api/v1/roles/${roleId}/permissions`, { permission_ids: permissionIds });
-  }
+    getResources: (roleId: string) =>
+      apiClient.get(`/api/v1/roles/${roleId}/resources`),
 
-  // Remove permission from role
-  removePermission(roleId: string, permissionId: string) {
-    return this.api.delete(`/api/v1/roles/${roleId}/permissions/${permissionId}`);
-  }
+    assignResource: (roleId: string, resourceId: string) =>
+      apiClient.post(`/api/v1/roles/${roleId}/resources/${resourceId}`, {}),
 
-  // Get role resources
-  getResources(roleId: string) {
-    return this.api.get(`/api/v1/roles/${roleId}/resources`);
-  }
+    removeResource: (roleId: string, resourceId: string) =>
+      apiClient.delete(`/api/v1/roles/${roleId}/resources/${resourceId}`),
+  };
+};
 
-  // Assign resource to role
-  assignResource(roleId: string, resourceId: string) {
-    return this.api.post(`/api/v1/roles/${roleId}/resources/${resourceId}`, {});
-  }
-
-  // Remove resource from role
-  removeResource(roleId: string, resourceId: string) {
-    return this.api.delete(`/api/v1/roles/${roleId}/resources/${resourceId}`);
-  }
-}
-
-export const roleServiceClient = new RoleServiceClient();
-
+export default createRoleService;

@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface ResourceListParams {
   type?: string;
@@ -29,52 +28,29 @@ export interface UpdateResourceRequest {
   is_active?: boolean;
 }
 
-export class ResourceServiceClient {
-  private readonly api: ApiClient;
+const createResourceService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: ResourceListParams) =>
+      apiClient.get('/api/v1/resources', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreateResourceRequest) =>
+      apiClient.post('/api/v1/resources', payload),
 
-  // List resources
-  list(params?: ResourceListParams) {
-    return this.api.get('/api/v1/resources', { params });
-  }
+    getById: (resourceId: string) =>
+      apiClient.get(`/api/v1/resources/${resourceId}`),
 
-  // Create resource
-  create(payload: CreateResourceRequest) {
-    return this.api.post('/api/v1/resources', payload);
-  }
+    update: (resourceId: string, payload: UpdateResourceRequest) =>
+      apiClient.put(`/api/v1/resources/${resourceId}`, payload),
 
-  // Get resource by ID
-  getById(resourceId: string) {
-    return this.api.get(`/api/v1/resources/${resourceId}`);
-  }
+    delete: (resourceId: string) =>
+      apiClient.delete(`/api/v1/resources/${resourceId}`),
 
-  // Update resource
-  update(resourceId: string, payload: UpdateResourceRequest) {
-    return this.api.put(`/api/v1/resources/${resourceId}`, payload);
-  }
+    getChildren: (resourceId: string) =>
+      apiClient.get(`/api/v1/resources/${resourceId}/children`),
 
-  // Delete resource
-  delete(resourceId: string) {
-    return this.api.delete(`/api/v1/resources/${resourceId}`);
-  }
+    getHierarchy: (resourceId: string) =>
+      apiClient.get(`/api/v1/resources/${resourceId}/hierarchy`),
+  };
+};
 
-  // Get resource children
-  getChildren(resourceId: string) {
-    return this.api.get(`/api/v1/resources/${resourceId}/children`);
-  }
-
-  // Get resource hierarchy
-  getHierarchy(resourceId: string) {
-    return this.api.get(`/api/v1/resources/${resourceId}/hierarchy`);
-  }
-}
-
-export const resourceServiceClient = new ResourceServiceClient();
-
+export default createResourceService;

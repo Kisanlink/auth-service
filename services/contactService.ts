@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface ContactListParams {
   limit?: number;
@@ -23,47 +22,26 @@ export interface UpdateContactRequest {
   metadata?: Record<string, unknown>;
 }
 
-export class ContactServiceClient {
-  private readonly api: ApiClient;
+const createContactService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: ContactListParams) =>
+      apiClient.get('/api/v1/contacts', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreateContactRequest) =>
+      apiClient.post('/api/v1/contacts', payload),
 
-  // List contacts
-  list(params?: ContactListParams) {
-    return this.api.get('/api/v1/contacts', { params });
-  }
+    getById: (contactId: string) =>
+      apiClient.get(`/api/v1/contacts/${contactId}`),
 
-  // Create contact
-  create(payload: CreateContactRequest) {
-    return this.api.post('/api/v1/contacts', payload);
-  }
+    update: (contactId: string, payload: UpdateContactRequest) =>
+      apiClient.put(`/api/v1/contacts/${contactId}`, payload),
 
-  // Get contact by ID
-  getById(contactId: string) {
-    return this.api.get(`/api/v1/contacts/${contactId}`);
-  }
+    delete: (contactId: string) =>
+      apiClient.delete(`/api/v1/contacts/${contactId}`),
 
-  // Update contact
-  update(contactId: string, payload: UpdateContactRequest) {
-    return this.api.put(`/api/v1/contacts/${contactId}`, payload);
-  }
+    getByUser: (userId: string, params?: ContactListParams) =>
+      apiClient.get(`/api/v1/contacts/user/${userId}`, { params: params as Record<string, string | number | boolean | undefined> }),
+  };
+};
 
-  // Delete contact
-  delete(contactId: string) {
-    return this.api.delete(`/api/v1/contacts/${contactId}`);
-  }
-
-  // Get contacts by user
-  getByUser(userId: string, params?: ContactListParams) {
-    return this.api.get(`/api/v1/contacts/user/${userId}`, { params });
-  }
-}
-
-export const contactServiceClient = new ContactServiceClient();
-
+export default createContactService;

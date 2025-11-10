@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface UserListParams {
   limit?: number;
@@ -30,72 +29,41 @@ export interface UpdateUserRequest {
   country_code?: string;
 }
 
-export class UserServiceClient {
-  private readonly api: ApiClient;
+const createUserService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: UserListParams) =>
+      apiClient.get('/api/v1/users', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreateUserRequest) =>
+      apiClient.post('/api/v1/users', payload),
 
-  // List users
-  list(params?: UserListParams) {
-    return this.api.get('/api/v1/users', { params: params as Record<string, string | number | boolean | undefined> });
-  }
+    getById: (userId: string) =>
+      apiClient.get(`/api/v1/users/${userId}`),
 
-  // Create user
-  create(payload: CreateUserRequest) {
-    return this.api.post('/api/v1/users', payload);
-  }
+    update: (userId: string, payload: UpdateUserRequest) =>
+      apiClient.put(`/api/v1/users/${userId}`, payload),
 
-  // Get user by ID
-  getById(userId: string) {
-    return this.api.get(`/api/v1/users/${userId}`);
-  }
+    delete: (userId: string) =>
+      apiClient.delete(`/api/v1/users/${userId}`),
 
-  // Update user
-  update(userId: string, payload: UpdateUserRequest) {
-    return this.api.put(`/api/v1/users/${userId}`, payload);
-  }
+    search: (params: UserSearchParams) =>
+      apiClient.get('/api/v1/users/search', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  // Delete user
-  delete(userId: string) {
-    return this.api.delete(`/api/v1/users/${userId}`);
-  }
+    evaluate: (userId: string, payload: { permission: string; context?: Record<string, unknown> }) =>
+      apiClient.post(`/api/v1/users/${userId}/evaluate`, payload),
 
-  // Search users
-  search(params: UserSearchParams) {
-    return this.api.get('/api/v1/users/search', { params: params as Record<string, string | number | boolean | undefined> });
-  }
+    getRoles: (userId: string) =>
+      apiClient.get(`/api/v1/users/${userId}/roles`),
 
-  // Evaluate user permission
-  evaluate(userId: string, payload: { permission: string; context?: Record<string, unknown> }) {
-    return this.api.post(`/api/v1/users/${userId}/evaluate`, payload);
-  }
+    assignRole: (userId: string, roleId: string) =>
+      apiClient.post(`/api/v1/users/${userId}/roles/${roleId}`, {}),
 
-  // Get user roles
-  getRoles(userId: string) {
-    return this.api.get(`/api/v1/users/${userId}/roles`);
-  }
+    removeRole: (userId: string, roleId: string) =>
+      apiClient.delete(`/api/v1/users/${userId}/roles/${roleId}`),
 
-  // Assign role to user
-  assignRole(userId: string, roleId: string) {
-    return this.api.post(`/api/v1/users/${userId}/roles/${roleId}`, {});
-  }
+    validate: (userId: string) =>
+      apiClient.post(`/api/v1/users/${userId}/validate`, {}),
+  };
+};
 
-  // Remove role from user
-  removeRole(userId: string, roleId: string) {
-    return this.api.delete(`/api/v1/users/${userId}/roles/${roleId}`);
-  }
-
-  // Validate user
-  validate(userId: string) {
-    return this.api.post(`/api/v1/users/${userId}/validate`, {});
-  }
-}
-
-export const userServiceClient = new UserServiceClient();
-
+export default createUserService;

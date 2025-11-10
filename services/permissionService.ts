@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface PermissionListParams {
   limit?: number;
@@ -27,47 +26,26 @@ export interface EvaluatePermissionRequest {
   context?: Record<string, unknown>;
 }
 
-export class PermissionServiceClient {
-  private readonly api: ApiClient;
+const createPermissionService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: PermissionListParams) =>
+      apiClient.get('/api/v1/permissions', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreatePermissionRequest) =>
+      apiClient.post('/api/v1/permissions', payload),
 
-  // List permissions
-  list(params?: PermissionListParams) {
-    return this.api.get('/api/v1/permissions', { params });
-  }
+    getById: (permissionId: string) =>
+      apiClient.get(`/api/v1/permissions/${permissionId}`),
 
-  // Create permission
-  create(payload: CreatePermissionRequest) {
-    return this.api.post('/api/v1/permissions', payload);
-  }
+    update: (permissionId: string, payload: UpdatePermissionRequest) =>
+      apiClient.put(`/api/v1/permissions/${permissionId}`, payload),
 
-  // Get permission by ID
-  getById(permissionId: string) {
-    return this.api.get(`/api/v1/permissions/${permissionId}`);
-  }
+    delete: (permissionId: string) =>
+      apiClient.delete(`/api/v1/permissions/${permissionId}`),
 
-  // Update permission
-  update(permissionId: string, payload: UpdatePermissionRequest) {
-    return this.api.put(`/api/v1/permissions/${permissionId}`, payload);
-  }
+    evaluate: (payload: EvaluatePermissionRequest) =>
+      apiClient.post('/api/v1/permissions/evaluate', payload),
+  };
+};
 
-  // Delete permission
-  delete(permissionId: string) {
-    return this.api.delete(`/api/v1/permissions/${permissionId}`);
-  }
-
-  // Evaluate permission
-  evaluate(payload: EvaluatePermissionRequest) {
-    return this.api.post('/api/v1/permissions/evaluate', payload);
-  }
-}
-
-export const permissionServiceClient = new PermissionServiceClient();
-
+export default createPermissionService;

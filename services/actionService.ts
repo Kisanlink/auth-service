@@ -1,5 +1,4 @@
-import { ApiClient } from '../utils/apiClient';
-import { authServiceConfig } from '../config';
+import createApiClient from '../utils/apiClient';
 
 export interface ActionListParams {
   limit?: number;
@@ -26,47 +25,26 @@ export interface UpdateActionRequest {
   metadata?: string;
 }
 
-export class ActionServiceClient {
-  private readonly api: ApiClient;
+const createActionService = (apiClient: ReturnType<typeof createApiClient>) => {
+  return {
+    list: (params?: ActionListParams) =>
+      apiClient.get('/api/v1/actions', { params: params as Record<string, string | number | boolean | undefined> }),
 
-  constructor(api: ApiClient = new ApiClient({
-    baseURL: authServiceConfig.baseURL,
-    defaultHeaders: authServiceConfig.defaultHeaders,
-    getAccessToken: authServiceConfig.getAccessToken
-  })) {
-    this.api = api;
-  }
+    create: (payload: CreateActionRequest) =>
+      apiClient.post('/api/v1/actions', payload),
 
-  // List actions
-  list(params?: ActionListParams) {
-    return this.api.get('/api/v1/actions', { params });
-  }
+    getById: (actionId: string) =>
+      apiClient.get(`/api/v1/actions/${actionId}`),
 
-  // Create action
-  create(payload: CreateActionRequest) {
-    return this.api.post('/api/v1/actions', payload);
-  }
+    update: (actionId: string, payload: UpdateActionRequest) =>
+      apiClient.put(`/api/v1/actions/${actionId}`, payload),
 
-  // Get action by ID
-  getById(actionId: string) {
-    return this.api.get(`/api/v1/actions/${actionId}`);
-  }
+    delete: (actionId: string) =>
+      apiClient.delete(`/api/v1/actions/${actionId}`),
 
-  // Update action
-  update(actionId: string, payload: UpdateActionRequest) {
-    return this.api.put(`/api/v1/actions/${actionId}`, payload);
-  }
+    getByService: (serviceName: string, params?: ActionListParams) =>
+      apiClient.get(`/api/v1/actions/service/${serviceName}`, { params: params as Record<string, string | number | boolean | undefined> }),
+  };
+};
 
-  // Delete action
-  delete(actionId: string) {
-    return this.api.delete(`/api/v1/actions/${actionId}`);
-  }
-
-  // Get actions by service
-  getByService(serviceName: string, params?: ActionListParams) {
-    return this.api.get(`/api/v1/actions/service/${serviceName}`, { params });
-  }
-}
-
-export const actionServiceClient = new ActionServiceClient();
-
+export default createActionService;
