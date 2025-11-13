@@ -32,7 +32,7 @@ const createAuthService = (apiClient: ReturnType<typeof createApiClient>) => {
     refresh: (payload: RefreshRequest) =>
       apiClient.post<{ access_token: string; refresh_token: string }>('/api/v1/auth/refresh', payload),
 
-    setMPIN: (payload: { mpin: string }) =>
+    setMPIN: (payload: { mpin: string; password: string }) =>
       apiClient.post<{}>('/api/v1/auth/set-mpin', payload),
 
     updateMPIN: (payload: { old_mpin?: string; new_mpin: string }) =>
