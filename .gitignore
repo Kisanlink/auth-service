@@ -7,6 +7,9 @@ pnpm-lock.yaml
 # Build output
 dist/
 
+# NPM credentials
+.npmrc
+
 # Environment files
 .env
 .env.local
