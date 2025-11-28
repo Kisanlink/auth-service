@@ -11,6 +11,7 @@ export { default as createActionService } from './services/actionService';
 export { default as createContactService } from './services/contactService';
 export { default as createModuleService } from './services/moduleService';
 export { default as createKYCService } from './services/kycService';
+export { default as createServicesService } from './services/servicesService';
 import { AuthServiceConfig } from './config';
 declare const createAAAService: (config: AuthServiceConfig) => {
     auth: {
@@ -150,6 +151,14 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         status: {
             get: (userId: string) => Promise<import("./types").KYCStatus>;
         };
+    };
+    services: {
+        list: (params?: import("./services/servicesService").ServiceListParams) => Promise<unknown>;
+        create: (payload: import("./services/servicesService").CreateServiceRequest) => Promise<unknown>;
+        getById: (serviceId: string) => Promise<unknown>;
+        update: (serviceId: string, payload: import("./services/servicesService").UpdateServiceRequest) => Promise<unknown>;
+        delete: (serviceId: string) => Promise<unknown>;
+        generateApiKey: () => Promise<unknown>;
     };
 };
 export default createAAAService;

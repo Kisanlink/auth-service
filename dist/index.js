@@ -14,6 +14,7 @@ export { default as createActionService } from './services/actionService';
 export { default as createContactService } from './services/contactService';
 export { default as createModuleService } from './services/moduleService';
 export { default as createKYCService } from './services/kycService';
+export { default as createServicesService } from './services/servicesService';
 // Main AAAService factory function
 import createApiClient from './utils/apiClient';
 import createAuthService from './services/authService';
@@ -26,6 +27,7 @@ import createActionService from './services/actionService';
 import createContactService from './services/contactService';
 import createModuleService from './services/moduleService';
 import createKYCService from './services/kycService';
+import createServicesService from './services/servicesService';
 const createAAAService = (config) => {
     const apiClient = createApiClient({
         baseURL: config.baseURL,
@@ -43,6 +45,7 @@ const createAAAService = (config) => {
     const contacts = createContactService(apiClient);
     const modules = createModuleService(apiClient);
     const kyc = createKYCService(apiClient);
+    const services = createServicesService(apiClient);
     return {
         auth,
         users,
@@ -54,6 +57,7 @@ const createAAAService = (config) => {
         contacts,
         modules,
         kyc,
+        services,
     };
 };
 export default createAAAService;

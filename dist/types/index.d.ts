@@ -150,3 +150,53 @@ export interface KYCErrorResponse {
         attempts_remaining?: number;
     };
 }
+/**
+ * Query parameters for listing services
+ */
+export interface ServiceListParams {
+    organization_id?: string;
+    is_active?: boolean;
+    limit?: number;
+    offset?: number;
+}
+/**
+ * Request payload for creating a new service
+ */
+export interface CreateServiceRequest {
+    name: string;
+    api_key: string;
+    organization_id: string;
+    description?: string;
+    metadata?: string;
+}
+/**
+ * Request payload for updating an existing service
+ */
+export interface UpdateServiceRequest {
+    name?: string;
+    description?: string;
+    api_key?: string;
+    organization_id?: string;
+    metadata?: string;
+    is_active?: boolean;
+}
+/**
+ * Service entity returned from API
+ */
+export interface ServiceData {
+    id: string;
+    name: string;
+    description?: string;
+    api_key?: string;
+    organization_id?: string;
+    metadata?: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+}
+/**
+ * Response from generate API key endpoint
+ */
+export interface GenerateApiKeyResponse {
+    api_key: string;
+}
