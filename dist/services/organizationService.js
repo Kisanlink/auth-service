@@ -18,7 +18,7 @@ const createOrganizationService = (apiClient) => {
         assignRoleToGroup: (orgId, groupId, roleId) => apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/roles`, { role_id: roleId }),
         removeRoleFromGroup: (orgId, groupId, roleId) => apiClient.delete(`/api/v1/organizations/${orgId}/groups/${groupId}/roles/${roleId}`),
         getGroupUsers: (orgId, groupId, params) => apiClient.get(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { params: params }),
-        addUserToGroup: (orgId, groupId, userId) => apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { user_id: userId }),
+        addUserToGroup: (orgId, groupId, userId) => apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { principal_id: userId, principal_type: 'user' }),
         removeUserFromGroup: (orgId, groupId, userId) => apiClient.delete(`/api/v1/organizations/${orgId}/groups/${groupId}/users/${userId}`),
         getUserEffectiveRoles: (orgId, userId) => apiClient.get(`/api/v1/organizations/${orgId}/users/${userId}/effective-roles`),
         getUserGroups: (orgId, userId) => apiClient.get(`/api/v1/organizations/${orgId}/users/${userId}/groups`),

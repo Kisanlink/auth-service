@@ -81,7 +81,7 @@ const createOrganizationService = (apiClient: ReturnType<typeof createApiClient>
       apiClient.get(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { params: params as Record<string, string | number | boolean | undefined> }),
 
     addUserToGroup: (orgId: string, groupId: string, userId: string) =>
-      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { user_id: userId }),
+      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { principal_id: userId, principal_type: 'user' }),
 
     removeUserFromGroup: (orgId: string, groupId: string, userId: string) =>
       apiClient.delete(`/api/v1/organizations/${orgId}/groups/${groupId}/users/${userId}`),
