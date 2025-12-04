@@ -72,7 +72,7 @@ const createOrganizationService = (apiClient: ReturnType<typeof createApiClient>
       apiClient.get(`/api/v1/organizations/${orgId}/groups/${groupId}/roles`),
 
     assignRoleToGroup: (orgId: string, groupId: string, roleId: string) =>
-      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/roles/${roleId}`, {}),
+      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/roles`, { role_id: roleId }),
 
     removeRoleFromGroup: (orgId: string, groupId: string, roleId: string) =>
       apiClient.delete(`/api/v1/organizations/${orgId}/groups/${groupId}/roles/${roleId}`),
@@ -81,7 +81,7 @@ const createOrganizationService = (apiClient: ReturnType<typeof createApiClient>
       apiClient.get(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { params: params as Record<string, string | number | boolean | undefined> }),
 
     addUserToGroup: (orgId: string, groupId: string, userId: string) =>
-      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users/${userId}`, {}),
+      apiClient.post(`/api/v1/organizations/${orgId}/groups/${groupId}/users`, { user_id: userId }),
 
     removeUserFromGroup: (orgId: string, groupId: string, userId: string) =>
       apiClient.delete(`/api/v1/organizations/${orgId}/groups/${groupId}/users/${userId}`),
