@@ -20,7 +20,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
             country_code: string;
             phone_number: string;
             password: string;
-            name?: string;
+            name?: string | undefined;
         }) => Promise<import("./types").AuthLoginResponse | {
             user_id: string;
         }>;
@@ -34,13 +34,13 @@ declare const createAAAService: (config: AuthServiceConfig) => {
             password: string;
         }) => Promise<{}>;
         updateMPIN: (payload: {
-            old_mpin?: string;
+            old_mpin?: string | undefined;
             new_mpin: string;
         }) => Promise<{}>;
         evaluatePermission: (payload: import("./types").PermissionEvaluationRequest) => Promise<import("./types").PermissionEvaluationResult>;
     };
     users: {
-        list: (params?: import("./services/userService").UserListParams) => Promise<unknown>;
+        list: (params?: import("./services/userService").UserListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/userService").CreateUserRequest) => Promise<unknown>;
         getById: (userId: string) => Promise<unknown>;
         update: (userId: string, payload: import("./services/userService").UpdateUserRequest) => Promise<unknown>;
@@ -48,7 +48,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         search: (params: import("./services/userService").UserSearchParams) => Promise<unknown>;
         evaluate: (userId: string, payload: {
             permission: string;
-            context?: Record<string, unknown>;
+            context?: Record<string, unknown> | undefined;
         }) => Promise<unknown>;
         getRoles: (userId: string) => Promise<unknown>;
         assignRole: (userId: string, roleId: string) => Promise<unknown>;
@@ -56,7 +56,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         validate: (userId: string) => Promise<unknown>;
     };
     roles: {
-        list: (params?: import("./services/roleService").RoleListParams) => Promise<unknown>;
+        list: (params?: import("./services/roleService").RoleListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/roleService").CreateRoleRequest) => Promise<unknown>;
         getById: (roleId: string) => Promise<unknown>;
         update: (roleId: string, payload: import("./services/roleService").UpdateRoleRequest) => Promise<unknown>;
@@ -69,7 +69,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         removeResource: (roleId: string, resourceId: string) => Promise<unknown>;
     };
     permissions: {
-        list: (params?: import("./services/permissionService").PermissionListParams) => Promise<unknown>;
+        list: (params?: import("./services/permissionService").PermissionListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/permissionService").CreatePermissionRequest) => Promise<unknown>;
         getById: (permissionId: string) => Promise<unknown>;
         update: (permissionId: string, payload: import("./services/permissionService").UpdatePermissionRequest) => Promise<unknown>;
@@ -77,7 +77,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         evaluate: (payload: import("./services/permissionService").EvaluatePermissionRequest) => Promise<unknown>;
     };
     resources: {
-        list: (params?: import("./services/resourceService").ResourceListParams) => Promise<unknown>;
+        list: (params?: import("./services/resourceService").ResourceListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/resourceService").CreateResourceRequest) => Promise<unknown>;
         getById: (resourceId: string) => Promise<unknown>;
         update: (resourceId: string, payload: import("./services/resourceService").UpdateResourceRequest) => Promise<unknown>;
@@ -86,7 +86,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         getHierarchy: (resourceId: string) => Promise<unknown>;
     };
     organizations: {
-        list: (params?: import("./services/organizationService").OrganizationListParams) => Promise<unknown>;
+        list: (params?: import("./services/organizationService").OrganizationListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/organizationService").CreateOrganizationRequest) => Promise<unknown>;
         getById: (orgId: string) => Promise<unknown>;
         update: (orgId: string, payload: import("./services/organizationService").UpdateOrganizationRequest) => Promise<unknown>;
@@ -96,46 +96,46 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         getHierarchy: (orgId: string) => Promise<unknown>;
         getStats: (orgId: string) => Promise<unknown>;
         listGroups: (orgId: string, params?: {
-            limit?: number;
-            offset?: number;
-        }) => Promise<unknown>;
+            limit?: number | undefined;
+            offset?: number | undefined;
+        } | undefined) => Promise<unknown>;
         createGroup: (orgId: string, payload: {
             name: string;
-            description?: string;
+            description?: string | undefined;
         }) => Promise<unknown>;
         getGroup: (orgId: string, groupId: string) => Promise<unknown>;
         updateGroup: (orgId: string, groupId: string, payload: {
-            name?: string;
-            description?: string;
+            name?: string | undefined;
+            description?: string | undefined;
         }) => Promise<unknown>;
         deleteGroup: (orgId: string, groupId: string) => Promise<unknown>;
         getGroupRoles: (orgId: string, groupId: string) => Promise<unknown>;
         assignRoleToGroup: (orgId: string, groupId: string, roleId: string) => Promise<unknown>;
         removeRoleFromGroup: (orgId: string, groupId: string, roleId: string) => Promise<unknown>;
         getGroupUsers: (orgId: string, groupId: string, params?: {
-            limit?: number;
-            offset?: number;
-        }) => Promise<unknown>;
+            limit?: number | undefined;
+            offset?: number | undefined;
+        } | undefined) => Promise<unknown>;
         addUserToGroup: (orgId: string, groupId: string, userId: string) => Promise<unknown>;
         removeUserFromGroup: (orgId: string, groupId: string, userId: string) => Promise<unknown>;
         getUserEffectiveRoles: (orgId: string, userId: string) => Promise<unknown>;
         getUserGroups: (orgId: string, userId: string) => Promise<unknown>;
     };
     actions: {
-        list: (params?: import("./services/actionService").ActionListParams) => Promise<unknown>;
+        list: (params?: import("./services/actionService").ActionListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/actionService").CreateActionRequest) => Promise<unknown>;
         getById: (actionId: string) => Promise<unknown>;
         update: (actionId: string, payload: import("./services/actionService").UpdateActionRequest) => Promise<unknown>;
         delete: (actionId: string) => Promise<unknown>;
-        getByService: (serviceName: string, params?: import("./services/actionService").ActionListParams) => Promise<unknown>;
+        getByService: (serviceName: string, params?: import("./services/actionService").ActionListParams | undefined) => Promise<unknown>;
     };
     contacts: {
-        list: (params?: import("./services/contactService").ContactListParams) => Promise<unknown>;
+        list: (params?: import("./services/contactService").ContactListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/contactService").CreateContactRequest) => Promise<unknown>;
         getById: (contactId: string) => Promise<unknown>;
         update: (contactId: string, payload: import("./services/contactService").UpdateContactRequest) => Promise<unknown>;
         delete: (contactId: string) => Promise<unknown>;
-        getByUser: (userId: string, params?: import("./services/contactService").ContactListParams) => Promise<unknown>;
+        getByUser: (userId: string, params?: import("./services/contactService").ContactListParams | undefined) => Promise<unknown>;
     };
     modules: {
         list: () => Promise<unknown>;
@@ -153,7 +153,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
         };
     };
     services: {
-        list: (params?: import("./services/servicesService").ServiceListParams) => Promise<unknown>;
+        list: (params?: import("./services/servicesService").ServiceListParams | undefined) => Promise<unknown>;
         create: (payload: import("./services/servicesService").CreateServiceRequest) => Promise<unknown>;
         getById: (serviceId: string) => Promise<unknown>;
         update: (serviceId: string, payload: import("./services/servicesService").UpdateServiceRequest) => Promise<unknown>;

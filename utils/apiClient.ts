@@ -4,10 +4,26 @@ export interface ApiConfig {
   getAccessToken?: () => string | undefined;
 }
 
+/**
+ * Build headers for the request
+ * 
+ * Authentication priority (as per AAA service middleware):
+ * 1. Authorization header (Bearer token) - preferred for service-to-service calls
+ * 2. HTTP-only cookies (auth_token) - fallback for browser clients
+ * 
+ * The browser automatically sends cookies when credentials: 'include' is set in fetch.
+ * The Authorization header takes precedence if both are present.
+ */
 function buildHeaders(config: ApiConfig, extra?: Record<string, string>): HeadersInit {
   const headers: Record<string, string> = { ...config.defaultHeaders, ...(extra || {}) };
+  
+  // Add Authorization header if token is available (backward compatibility)
+  // Cookies will be sent automatically by browser when credentials: 'include' is set
   const token = config.getAccessToken?.();
-  if (token) headers['Authorization'] = `Bearer ${token}`;
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  
   return headers;
 }
 
@@ -25,10 +41,20 @@ async function request<T>(
       if (v !== undefined && v !== null) url.searchParams.set(k, String(v));
     });
   }
+
+  // Build headers with Content-Type for JSON requests
+  const headers = buildHeaders(config, options?.headers) as Record<string, string>;
+  if (body !== undefined && !headers['Content-Type']) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   const res = await fetch(url.toString(), {
     method,
-    headers: buildHeaders(config, options?.headers),
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    credentials: 'include', // REQUIRED: Include HTTP-only cookies (auth_token, refresh_token)
+    // Cookies are automatically sent by browser when credentials: 'include' is set
+    // Authorization header is still sent for backward compatibility (service-to-service)
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');
@@ -50,12 +76,30 @@ async function request<T>(
 /**
  * Factory function to create an API client with injectable configuration
  * Replaces class-based ApiClient with functional approach
+ * 
+ * **HTTP-Only Cookie Support:**
+ * All requests automatically include credentials: 'include', which enables:
+ * - Automatic sending of HTTP-only cookies (auth_token, refresh_token)
+ * - Backward compatibility with Bearer token authentication via Authorization header
+ * 
+ * The AAA service middleware checks tokens in this order:
+ * 1. Authorization header (Bearer token) - preferred for service-to-service
+ * 2. Cookie (auth_token) - fallback for browser clients
  *
  * @param config - API configuration (baseURL, headers, token getter)
  * @returns Object with HTTP method functions (get, post, put, delete)
  *
  * @example
+ * // Browser client - cookies are automatically sent
  * const api = createApiClient({ baseURL: 'https://api.example.com' });
+ * const response = await api.get('/users');
+ * 
+ * @example
+ * // Service-to-service - Bearer token in header
+ * const api = createApiClient({ 
+ *   baseURL: 'https://api.example.com',
+ *   getAccessToken: () => localStorage.getItem('token')
+ * });
  * const response = await api.get('/users');
  */
 const createApiClient = (config: ApiConfig) => {

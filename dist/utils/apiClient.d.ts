@@ -19,17 +19,17 @@ declare const createApiClient: (config: ApiConfig) => {
         headers?: Record<string, string>;
         params?: Record<string, string | number | boolean | undefined>;
     }) => Promise<T>;
-    post: <T>(endpoint: string, body?: unknown, options?: {
+    post: <T_1>(endpoint: string, body?: unknown, options?: {
         headers?: Record<string, string>;
         params?: Record<string, string | number | boolean | undefined>;
-    }) => Promise<T>;
-    put: <T>(endpoint: string, body?: unknown, options?: {
+    }) => Promise<T_1>;
+    put: <T_2>(endpoint: string, body?: unknown, options?: {
         headers?: Record<string, string>;
         params?: Record<string, string | number | boolean | undefined>;
-    }) => Promise<T>;
-    delete: <T>(endpoint: string, options?: {
+    }) => Promise<T_2>;
+    delete: <T_3>(endpoint: string, options?: {
         headers?: Record<string, string>;
         params?: Record<string, string | number | boolean | undefined>;
-    }) => Promise<T>;
+    }) => Promise<T_3>;
 };
 export default createApiClient;

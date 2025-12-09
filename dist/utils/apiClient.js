@@ -1,8 +1,21 @@
+/**
+ * Build headers for the request
+ *
+ * Authentication priority (as per AAA service middleware):
+ * 1. Authorization header (Bearer token) - preferred for service-to-service calls
+ * 2. HTTP-only cookies (auth_token) - fallback for browser clients
+ *
+ * The browser automatically sends cookies when credentials: 'include' is set in fetch.
+ * The Authorization header takes precedence if both are present.
+ */
 function buildHeaders(config, extra) {
     const headers = { ...config.defaultHeaders, ...(extra || {}) };
+    // Add Authorization header if token is available (backward compatibility)
+    // Cookies will be sent automatically by browser when credentials: 'include' is set
     const token = config.getAccessToken?.();
-    if (token)
+    if (token) {
         headers['Authorization'] = `Bearer ${token}`;
+    }
     return headers;
 }
 async function request(config, method, endpoint, body, options) {
@@ -14,10 +27,18 @@ async function request(config, method, endpoint, body, options) {
                 url.searchParams.set(k, String(v));
         });
     }
+    // Build headers with Content-Type for JSON requests
+    const headers = buildHeaders(config, options?.headers);
+    if (body !== undefined && !headers['Content-Type']) {
+        headers['Content-Type'] = 'application/json';
+    }
     const res = await fetch(url.toString(), {
         method,
-        headers: buildHeaders(config, options?.headers),
+        headers,
         body: body !== undefined ? JSON.stringify(body) : undefined,
+        credentials: 'include', // REQUIRED: Include HTTP-only cookies (auth_token, refresh_token)
+        // Cookies are automatically sent by browser when credentials: 'include' is set
+        // Authorization header is still sent for backward compatibility (service-to-service)
     });
     if (!res.ok) {
         const text = await res.text().catch(() => '');
