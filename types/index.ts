@@ -24,8 +24,12 @@ export interface AuthTokens {
 export interface AuthLoginResponse {
   access_token: string;
   refresh_token: string;
+  token_type?: 'Bearer';
+  expires_in?: number;
   user: UserData;
   permissions?: string[];
+  /** Cookie configuration hints (informational, actual cookies set via Set-Cookie header) */
+  cookie_config?: CookieConfig;
 }
 
 export interface RefreshRequest {
@@ -225,4 +229,49 @@ export interface ServiceData {
 export interface GenerateApiKeyResponse {
   api_key: string;
 }
+
+// Cookie Configuration Types
+
+/**
+ * SameSite attribute for cookies
+ * - 'Strict': Cookie only sent in first-party context
+ * - 'Lax': Cookie sent with top-level navigations and GET from third-party
+ * - 'None': Cookie sent in all contexts (requires Secure=true)
+ */
+export type CookieSameSite = 'Strict' | 'Lax' | 'None';
+
+/**
+ * Cookie configuration returned in auth responses
+ * This is informational - actual cookies are set via Set-Cookie headers
+ */
+export interface CookieConfig {
+  /** Max age for auth_token cookie in seconds (default: 3600) */
+  auth_token_max_age: number;
+  /** Max age for refresh_token cookie in seconds (default: 604800) */
+  refresh_token_max_age: number;
+  /** Whether cookies require HTTPS (true in production) */
+  secure: boolean;
+  /** SameSite attribute for cookies */
+  same_site: CookieSameSite;
+}
+
+/**
+ * Cookie names used by the AAA service
+ */
+export const COOKIE_NAMES = {
+  /** Access token cookie name */
+  AUTH_TOKEN: 'auth_token',
+  /** Refresh token cookie name */
+  REFRESH_TOKEN: 'refresh_token',
+} as const;
+
+/**
+ * Default cookie configuration values
+ */
+export const COOKIE_DEFAULTS = {
+  /** Access token expiry in seconds (1 hour) */
+  AUTH_TOKEN_MAX_AGE: 3600,
+  /** Refresh token expiry in seconds (7 days) */
+  REFRESH_TOKEN_MAX_AGE: 604800,
+} as const;
 

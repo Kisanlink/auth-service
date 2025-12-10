@@ -33,6 +33,7 @@ const createAAAService = (config) => {
         baseURL: config.baseURL,
         defaultHeaders: config.defaultHeaders,
         getAccessToken: config.getAccessToken,
+        withCredentials: config.withCredentials,
     });
     // Initialize all services
     const auth = createAuthService(apiClient);

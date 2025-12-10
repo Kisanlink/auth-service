@@ -2,6 +2,23 @@ export interface ApiConfig {
   baseURL: string;
   defaultHeaders?: Record<string, string>;
   getAccessToken?: () => string | undefined;
+  /**
+   * Enable cookie-based authentication.
+   * When true, cookies are sent with cross-origin requests (credentials: 'include').
+   * Required for browser clients using HTTP-only cookie authentication.
+   *
+   * @default false
+   *
+   * @example
+   * // Browser client with cookie auth
+   * const apiClient = createApiClient({
+   *   baseURL: 'https://api.example.com',
+   *   withCredentials: true,
+   * });
+   *
+   * @see https://developer.mozilla.org/en-US/docs/Web/API/fetch#credentials
+   */
+  withCredentials?: boolean;
 }
 
 function buildHeaders(config: ApiConfig, extra?: Record<string, string>): HeadersInit {
@@ -29,6 +46,7 @@ async function request<T>(
     method,
     headers: buildHeaders(config, options?.headers),
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    credentials: config.withCredentials ? 'include' : 'same-origin',
   });
   if (!res.ok) {
     const text = await res.text().catch(() => '');

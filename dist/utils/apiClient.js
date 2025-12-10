@@ -18,6 +18,7 @@ async function request(config, method, endpoint, body, options) {
         method,
         headers: buildHeaders(config, options?.headers),
         body: body !== undefined ? JSON.stringify(body) : undefined,
+        credentials: config.withCredentials ? 'include' : 'same-origin',
     });
     if (!res.ok) {
         const text = await res.text().catch(() => '');
