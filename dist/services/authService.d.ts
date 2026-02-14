@@ -1,5 +1,5 @@
 import createApiClient from '../utils/apiClient';
-import { AuthLoginResponse, LoginRequest, PermissionEvaluationRequest, PermissionEvaluationResult, RefreshRequest } from '../types';
+import { AuthLoginResponse, ChangePasswordRequest, ChangePasswordResponse, LoginRequest, PermissionEvaluationRequest, PermissionEvaluationResult, RefreshRequest } from '../types';
 /**
  * Factory function to create an auth service with injectable API client.
  *
@@ -128,5 +128,13 @@ declare const createAuthService: (apiClient: ReturnType<typeof createApiClient>)
      * @returns Whether permission is allowed and reasons
      */
     evaluatePermission: (payload: PermissionEvaluationRequest) => Promise<PermissionEvaluationResult>;
+    /**
+     * Change the current user's password.
+     * Requires authentication (Bearer token or auth cookie).
+     *
+     * @param payload - Old and new password
+     * @returns Success message
+     */
+    changePassword: (payload: ChangePasswordRequest) => Promise<ChangePasswordResponse>;
 };
 export default createAuthService;

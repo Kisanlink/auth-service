@@ -111,6 +111,14 @@ const createAuthService = (apiClient) => {
          * @returns Whether permission is allowed and reasons
          */
         evaluatePermission: (payload) => apiClient.post('/api/v1/permissions/evaluate', payload),
+        /**
+         * Change the current user's password.
+         * Requires authentication (Bearer token or auth cookie).
+         *
+         * @param payload - Old and new password
+         * @returns Success message
+         */
+        changePassword: (payload) => apiClient.post('/api/v1/auth/change-password', payload),
     };
 };
 export default createAuthService;

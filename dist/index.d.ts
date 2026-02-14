@@ -38,6 +38,7 @@ declare const createAAAService: (config: AuthServiceConfig) => {
             new_mpin: string;
         }) => Promise<{}>;
         evaluatePermission: (payload: import("./types").PermissionEvaluationRequest) => Promise<import("./types").PermissionEvaluationResult>;
+        changePassword: (payload: import("./types").ChangePasswordRequest) => Promise<import("./types").ChangePasswordResponse>;
     };
     users: {
         list: (params?: import("./services/userService").UserListParams) => Promise<unknown>;

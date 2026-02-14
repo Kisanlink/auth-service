@@ -1,6 +1,8 @@
 import createApiClient from '../utils/apiClient';
 import {
   AuthLoginResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   LoginRequest,
   PermissionEvaluationRequest,
   PermissionEvaluationResult,
@@ -133,6 +135,16 @@ const createAuthService = (apiClient: ReturnType<typeof createApiClient>) => {
      */
     evaluatePermission: (payload: PermissionEvaluationRequest) =>
       apiClient.post<PermissionEvaluationResult>('/api/v1/permissions/evaluate', payload),
+
+    /**
+     * Change the current user's password.
+     * Requires authentication (Bearer token or auth cookie).
+     *
+     * @param payload - Old and new password
+     * @returns Success message
+     */
+    changePassword: (payload: ChangePasswordRequest) =>
+      apiClient.post<ChangePasswordResponse>('/api/v1/auth/change-password', payload),
   };
 };
 

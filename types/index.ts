@@ -8,6 +8,17 @@ export interface UserData {
   name?: string;
   phone_number?: string;
   roles: UserRoleRef[];
+  must_change_password?: boolean;
+}
+
+export interface ChangePasswordRequest {
+  old_password: string;
+  new_password: string;
+}
+
+export interface ChangePasswordResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface LoginRequest {
